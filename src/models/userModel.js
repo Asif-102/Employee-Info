@@ -1,3 +1,6 @@
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("user", {
     name: {
@@ -23,6 +26,28 @@ module.exports = (sequelize, DataTypes) => {
         len: [6, 20],
       },
     },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  });
+
+  // Instance method for generating auth token
+  User.prototype.generateAuthToken = async function () {
+    const user = this;
+    const token = jwt.sign({ id: user.id }, "abcdef");
+
+    // Add the new token
+    user.token = token;
+    await user.save();
+
+    return token;
+  };
+
+  User.addHook("beforeSave", async (user, options) => {
+    if (user.changed("password")) {
+      user.password = await bcrypt.hash(user.password, 8);
+    }
   });
 
   return User;
