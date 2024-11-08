@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Employee = sequelize.define("user", {
+  const Employee = sequelize.define("employee", {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: true,
+      },
+    },
+    parentId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null,
+      validate: {
+        isInt: true,
       },
     },
   });
